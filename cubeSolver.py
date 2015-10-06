@@ -230,13 +230,38 @@ def flipped_edges():
 
 def solve_flipped_edges(location):
     print(print_solve(location))
-    print(print_solve(location[::-1]))    
+    print(print_solve(location[::-1]))
+
+def find_cycle_break():
+    if get_edge('UF') != 'WG':
+        return 'UF'
+    elif get_edge('UL') != 'WO':
+        return 'UL'
+    elif get_edge('UB') != 'WB':
+        return 'UB'
+    elif get_edge('FL') != 'GO':
+        return 'FL'
+    elif get_edge('BL') != 'BO':
+        return 'BL'
+    elif get_edge('BR') != 'BR':
+        return 'BR'
+    elif get_edge('FR') != 'GR':
+        return 'FR'
+    elif get_edge('DB') != 'YB':
+        return 'DB'
+    elif get_edge('DL') != 'YO':
+        return 'DL'
+    elif get_edge('DF') != 'YG':
+        return 'DF'
+    elif get_edge('DR') != 'YR':
+        return 'DR'
 
     # elif get_edge('UR') == 'WR' or get_edge('UR') == 'RW':
     #     #cycle_break = find_unsolved_edge()
     #     #print
     #     t_perm_swap(cycle_break)
     #     solves_edges()
+    
 
 def solve_edges():
     if (edges['UF'] == 'W') and (edges['UL'] == 'W') and (edges['UB'] == 'W') and (edges['UR'] == 'W') and (edges['LD'] == 'O') and (edges['LB'] == 'O') and (edges['LU'] == 'O') and (edges['LF'] == 'O') and (edges['FD'] == 'G') and (edges['FL'] == 'G') and (edges['FU'] == 'G') and (edges['FR'] == 'G') and (edges['RD'] == 'R') and (edges['RF'] == 'R') and (edges['RU'] == 'R') and (edges['RB'] == 'R') and (edges['BD'] == 'B') and (edges['BR'] == 'B') and (edges['BU'] == 'B') and (edges['BL'] == 'B') and (edges['DB'] == 'Y') and (edges['DL'] == 'Y') and (edges['DF'] == 'Y') and (edges['DR'] == 'Y'):
@@ -331,14 +356,12 @@ def solve_edges():
         print(print_solve('DR'))
         solve_edges()
 
-    # here we check if the buffer is solved/flipped
+    elif get_edge('UR') == 'WR' or get_edge('RU') == 'RW':
+        cycle_break = ''
+        cycle_break = find_cycle_break()
+        print(print_solve(cycle_break))
+        solve_edges()
 
     elif flipped_edges():
         solve_flipped_edges(flipped_edges())
-# Example scrambles it can do
-# R U' R U R U R U' R' U' R2
-# R2 U R U R' U' R' U' R' U R'
-
-# L' F L F L F L' F' L' F' R2 U R U R' U' R' U' R' U R'
-# U2 L2 D L2 R2 U' R2 D L2 R2 B L F2 D L D' L' B F R' # no cycle breaks
-# R2 B D R2 F R' L U B2 R U2 R2 L2 B2 D2 B' U2 D2 R2 U2 D2 # no cycle breaks, but has a flipped edge
+        solve_edges()
