@@ -1,11 +1,5 @@
 # Initial Cube State (White top, green front)
 
-# corners = {'URF': 'W', 'UFL': 'W', 'ULB': 'W', 'UBR': 'W',
-#                 'LFD': 'O', 'LDB': 'O', 'LBU': 'O', 'LUF': 'O',
-#                 'FRD': 'G', 'FDL': 'G', 'FLU': 'G', 'FUR': 'G',
-#                 'RBD': 'R', 'RDF': 'R', 'RFU': 'R', 'RUB': 'R',
-#                 'BLD': 'B', 'BDR': 'B', 'BRU': 'B', 'BUL': 'B',
-#                 'DRB': 'Y', 'DBL': 'Y', 'DLF': 'Y', 'DFR': 'Y'}
 
 corners = {'URF': 'WRG', 'UFL': 'WGO', 'ULB': 'WOB', 'UBR': 'WBR',
                 'LFD': 'OGY', 'LDB': 'OYB', 'LBU': 'OBW', 'LUF': 'OWG',
@@ -16,12 +10,12 @@ corners = {'URF': 'WRG', 'UFL': 'WGO', 'ULB': 'WOB', 'UBR': 'WBR',
 
 solved_corners = dict(corners)
 
-edges = {'UF': 'W', 'UL': 'W', 'UB': 'W', 'UR': 'W',
-        'LD': 'O', 'LB': 'O', 'LU': 'O', 'LF': 'O',
-        'FD': 'G', 'FL': 'G', 'FU': 'G', 'FR': 'G',
-        'RD': 'R', 'RF': 'R', 'RU': 'R', 'RB': 'R',
-        'BD': 'B', 'BR': 'B', 'BU': 'B', 'BL': 'B',
-        'DB': 'Y', 'DL': 'Y', 'DF': 'Y', 'DR': 'Y'}
+edges = {'UF': 'WG', 'UL': 'WO', 'UB': 'WB', 'UR': 'WR',
+        'LD': 'OY', 'LB': 'OB', 'LU': 'OW', 'LF': 'OG',
+        'FD': 'GY', 'FL': 'GO', 'FU': 'GW', 'FR': 'GR',
+        'RD': 'RY', 'RF': 'RG', 'RU': 'RW', 'RB': 'RB',
+        'BD': 'BY', 'BR': 'BR', 'BU': 'BW', 'BL': 'BO',
+        'DB': 'YB', 'DL': 'YO', 'DF': 'YG', 'DR': 'YR'}
 
 solved_edges = dict(edges)
 
@@ -130,14 +124,6 @@ for move in scramble:
 
 t_perm = 'R U R\' U\' R\' F R2 U\' R\' U\' R U R\' F\''
 y_perm = 'F R U\' R\' U\' R U R\' F\' R U R\' U\' R\' F R F\''
-
-def get_edge(location):
-    """Returns the colors of the edge at a location"""
-    return edges[location] + edges[location[::-1]]
-
-def get_corner(location):
-    """Returns the colors of the corner at a location"""
-    return corners[location] + (corners[location[1:] + location[:1]]) + (corners[location[2:] + location[:2]])
 
 def print_edge_solve(location):
 
@@ -262,7 +248,7 @@ def flipped_edges():
     check_edges = ['UF', 'UL', 'UB', 'FL', 'LB', 'BR', 'RF', 'DB', 'DL', 'DF', 'DR']
     flipped_positions = ['GW', 'OW', 'BW', 'OG', 'BO', 'RB', 'GR', 'BY', 'OY', 'GY', 'RY']
     for edge, flipped_position in zip(check_edges, flipped_positions):
-        if get_edge(edge) == flipped_position:
+        if edges[edge] == flipped_position:
             return edge
     return False
 
@@ -290,29 +276,33 @@ def solve_twisted_corners(location): # Need to figure out how to break up the tu
         print(print_corner_solve(location[0][2:] + location[0][:2]))        
 
 def find_cycle_break():
-    if get_edge('UF') != 'WG' and get_edge('UF') != 'GW':
-        return 'UF'
-    elif get_edge('UL') != 'WO' and get_edge('UL') != 'OW': 
-        return 'UL'
-    elif get_edge('UB') != 'WB' and get_edge('UB') != 'BW':
-        return 'UB'
-    elif get_edge('FL') != 'GO' and get_edge('FL') != 'OG':
-        return 'FL'
-    elif get_edge('BL') != 'BO' and get_edge('BL') != 'OB':
-        return 'BL'
-    elif get_edge('BR') != 'BR' and get_edge('BR') != 'RB':
-        return 'BR'
-    elif get_edge('FR') != 'GR' and get_edge('FR') != 'RG':
-        return 'FR'
-    elif get_edge('DB') != 'YB' and get_edge('DB') != 'BY':
-        return 'DB'
-    elif get_edge('DL') != 'YO' and get_edge('DL') != 'OY':
-        return 'DL'
-    elif get_edge('DF') != 'YG' and get_edge('DF') != 'GY':
-        return 'DF'
-    elif get_edge('DR') != 'YR' and get_edge('DR') != 'RY':
-        return 'DR'
+    if edges['UF'] != 'WG' and not is_flipped('UF'):
+        print(print_edge_solve('UF'))
+    elif edges['UL'] != 'WO' and not is_flipped('UL'):
+        print(print_edge_solve('UL'))
+    elif edges['UB'] != 'WB' and not is_flipped('UB'):
+        print(print_edge_solve('UB'))        
+    elif edges['FL'] != 'GO' and not is_flipped('FL'):
+        print(print_edge_solve('FL'))       
+    elif edges['BL'] != 'BO' and not is_flipped('BL'):
+        print(print_edge_solve('BL'))        
+    elif edges['BR'] != 'BR' and not is_flipped('BR'):
+        print(print_edge_solve('BR'))        
+    elif edges['FR'] != 'GR' and not is_flipped('FR'):
+        print(print_edge_solve('FR'))        
+    elif edges['DB'] != 'YB' and not is_flipped('DB'):
+        print(print_edge_solve('DB'))        
+    elif edges['DL'] != 'YO' and not is_flipped('DL'):
+        print(print_edge_solve('DL'))        
+    elif edges['DF'] != 'YG' and not is_flipped('DF'):
+        print(print_edge_solve('DF'))        
+    elif edges['DR'] != 'YR' and not is_flipped('DR'):
+        print(print_edge_solve('DR'))
+    else:
+        solve_flipped_edges(flipped_edges())
 
+def is_flipped(location):
+    return edges[location] == solved_edges[location[::-1]]
 def find_corner_break():
     if corners['URF'] != 'WRG' and not is_twisted('URF'):
         print(print_corner_solve('URF'))
@@ -335,113 +325,99 @@ def find_corner_break():
 def is_twisted(location):
     return corners[location] == solved_corners[location[1:] + location[:1]] or corners[location] == solved_corners[location[2:] + location[:2]]  
 
+edge_swap_count = 0
+
 def solve_edges():
-    if (edges['UF'] == 'W') and (edges['UL'] == 'W') and (edges['UB'] == 'W') and (edges['UR'] == 'W') and (edges['LD'] == 'O') and (edges['LB'] == 'O') and (edges['LU'] == 'O') and (edges['LF'] == 'O') and (edges['FD'] == 'G') and (edges['FL'] == 'G') and (edges['FU'] == 'G') and (edges['FR'] == 'G') and (edges['RD'] == 'R') and (edges['RF'] == 'R') and (edges['RU'] == 'R') and (edges['RB'] == 'R') and (edges['BD'] == 'B') and (edges['BR'] == 'B') and (edges['BU'] == 'B') and (edges['BL'] == 'B') and (edges['DB'] == 'Y') and (edges['DL'] == 'Y') and (edges['DF'] == 'Y') and (edges['DR'] == 'Y'):
+    global edge_swap_count
+
+    if (edges['UF'] == 'WG') and (edges['UL'] == 'WO') and (edges['UB'] == 'WB') and (edges['UR'] == 'WR') and (edges['FL'] == 'GO') and (edges['LB'] == 'OB') and (edges['RB'] == 'RB') and (edges['RF'] == 'RG') and (edges['DB'] == 'YB') and (edges['DL'] == 'YO') and (edges['DF'] == 'YG') and (edges['DR'] == 'YR') and edge_swap_count % 2 == 0:
         print('Edges Solved')
         return False
-
-    elif get_edge('UR') == 'WG':
-        print(print_edge_solve('UF'))
-        solve_edges()
-
-    elif get_edge('UR') == 'WO':
+    elif (edges['UF'] == 'WG') and (edges['UL'] == 'WO') and (edges['UB'] == 'WB') and (edges['UR'] == 'WR') and (edges['FL'] == 'GO') and (edges['LB'] == 'OB') and (edges['RB'] == 'RB') and (edges['RF'] == 'RG') and (edges['DB'] == 'YB') and (edges['DL'] == 'YO') and (edges['DF'] == 'YG') and (edges['DR'] == 'YR') and edge_swap_count % 2 == 1:
         print(print_edge_solve('UL'))
-        solve_edges()
+        return False
+    else:
+        target = edges['UR']
+        if target == 'WG':
+            print(print_edge_solve('UF'))
 
-    elif get_edge('UR') == 'WB':
-        print(print_edge_solve('UB'))
-        solve_edges()
+        elif target == 'WO':
+            print(print_edge_solve('UL'))
 
-    elif get_edge('UR') == 'OY':
-        print(print_edge_solve('LD'))
-        solve_edges()
+        elif target == 'WB':
+            print(print_edge_solve('UB'))
 
-    elif get_edge('UR') == 'OB':
-        print(print_edge_solve('LB'))
-        solve_edges()
+        elif target == 'OY':
+            print(print_edge_solve('LD'))
 
-    elif get_edge('UR') == 'OW':
-        print(print_edge_solve('LU'))
-        solve_edges()
+        elif target == 'OB':
+            print(print_edge_solve('LB'))
 
-    elif get_edge('UR') == 'OG':
-        print(print_edge_solve('LF'))
-        solve_edges()
+        elif target == 'OW':
+            print(print_edge_solve('LU'))
 
-    elif get_edge('UR') == 'GY':
-        print(print_edge_solve('FD'))
-        solve_edges()
+        elif target == 'OG':
+            print(print_edge_solve('LF'))
 
-    elif get_edge('UR') == 'GO':
-        print(print_edge_solve('FL'))
-        solve_edges()
+        elif target == 'GY':
+            print(print_edge_solve('FD'))
 
-    elif get_edge('UR') == 'GW':
-        print(print_edge_solve('FU'))
-        solve_edges()
+        elif target == 'GO':
+            print(print_edge_solve('FL'))
 
-    elif get_edge('UR') == 'GR':
-        print(print_edge_solve('FR'))
-        solve_edges()
+        elif target == 'GW':
+            print(print_edge_solve('FU'))
 
-    elif get_edge('UR') == 'RY':
-        print(print_edge_solve('RD'))
-        solve_edges()
+        elif target == 'GR':
+            print(print_edge_solve('FR'))
 
-    elif get_edge('UR') == 'RG':
-        print(print_edge_solve('RF'))
-        solve_edges()
+        elif target == 'RY':
+            print(print_edge_solve('RD'))
 
-    elif get_edge('UR') == 'RB':
-        print(print_edge_solve('RB'))
-        solve_edges()
+        elif target == 'RG':
+            print(print_edge_solve('RF'))
 
-    elif get_edge('UR') == 'BY':
-        print(print_edge_solve('BD'))
-        solve_edges()
+        elif target == 'RB':
+            print(print_edge_solve('RB'))
 
-    elif get_edge('UR') == 'BR':
-        print(print_edge_solve('BR'))
-        solve_edges()
+        elif target == 'BY':
+            print(print_edge_solve('BD'))
 
-    elif get_edge('UR') == 'BW':
-        print(print_edge_solve('BU'))
-        solve_edges()
+        elif target == 'BR':
+            print(print_edge_solve('BR'))
 
-    elif get_edge('UR') == 'BO':
-        print(print_edge_solve('BL'))
-        solve_edges()
+        elif target == 'BW':
+            print(print_edge_solve('BU'))
 
-    elif get_edge('UR') == 'YB':
-        print(print_edge_solve('DB'))
-        solve_edges()
+        elif target == 'BO':
+            print(print_edge_solve('BL'))
 
-    elif get_edge('UR') == 'YO':
-        print(print_edge_solve('DL'))
-        solve_edges()
+        elif target == 'YB':
+            print(print_edge_solve('DB'))
 
-    elif get_edge('UR') == 'YG':
-        print(print_edge_solve('DF'))
-        solve_edges()
+        elif target == 'YO':
+            print(print_edge_solve('DL'))
 
-    elif get_edge('UR') == 'YR':
-        print(print_edge_solve('DR'))
-        solve_edges()
+        elif target == 'YG':
+            print(print_edge_solve('DF'))
 
-    elif get_edge('UR') == 'WR' or get_edge('UR') == 'RW' and not flipped_edges():
-        cycle_break = ''
-        cycle_break = find_cycle_break()
-        print(print_edge_solve(cycle_break))
-        solve_edges()
+        elif target == 'YR':
+            print(print_edge_solve('DR'))
 
-    elif flipped_edges():
-        solve_flipped_edges(flipped_edges())
+        elif target == 'WR' or target == 'RW':
+            find_cycle_break()
+
+        edge_swap_count += 1
         solve_edges()
 
 def solve_corners():
-    if (corners['URF'] == 'WRG') and (corners['UFL'] == 'WGO') and (corners['ULB'] == 'WOB') and (corners['UBR'] == 'WBR') and (corners['DRB'] == 'YRB') and (corners['DBL'] == 'YBO') and (corners['DLF'] == 'YOG') and (corners['DFR'] == 'YGR'):
+    if (corners['URF'] == 'WRG') and (corners['UFL'] == 'WGO') and (corners['ULB'] == 'WOB') and (corners['UBR'] == 'WBR') and (corners['DRB'] == 'YRB') and (corners['DBL'] == 'YBO') and (corners['DLF'] == 'YOG') and (corners['DFR'] == 'YGR') and edge_swap_count % 2 == 0:
         print('Corners Solved')
         return False
+    elif (corners['URF'] == 'WRG') and (corners['UFL'] == 'WGO') and (corners['ULB'] == 'WOB') and (corners['UBR'] == 'WBR') and (corners['DRB'] == 'YRB') and (corners['DBL'] == 'YBO') and (corners['DLF'] == 'YOG') and (corners['DFR'] == 'YGR') and edge_swap_count % 2 == 1:
+        print('U2 R2 U R U R\' U\' R\' U\' R\' U R\' U2 // Parity fix')
+        return False
+
     else: 
         target = corners['ULB']
         if target == 'WRG':
@@ -487,9 +463,8 @@ def solve_corners():
         elif target == 'YGR':
             print(print_corner_solve('DFR'))
         elif (target == 'WOB' or target == 'OBW' or target == 'BWO'):
-            find_corner_break()       
+            find_corner_break()    
         solve_corners()
    
-
-
-# L2 D' F2 L2 U R2 U2 L2 U2 B2 R2 B U' F2 R D' F2 U' L U R2
+solve_edges()
+solve_corners()
