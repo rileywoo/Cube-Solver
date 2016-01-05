@@ -122,6 +122,7 @@ for move in scramble:
 
 # The Solver
 
+edge_swap_count = 0
 t_perm = 'R U R\' U\' R\' F R2 U\' R\' U\' R U R\' F\''
 y_perm = 'F R U\' R\' U\' R U R\' F\' R U R\' U\' R\' F R F\''
 
@@ -253,8 +254,10 @@ def flipped_edges():
     return False
 
 def solve_flipped_edges(location):
+    global edge_swap_count
     print(print_edge_solve(location))
     print(print_edge_solve(location[::-1]))
+    edge_swap_count += 1
 
 def twisted_corners():
     check_corners = ['URF', 'UFL', 'UBR', 'DRB', 'DBL', 'DLF', 'DFR']
@@ -303,6 +306,7 @@ def find_cycle_break():
 
 def is_flipped(location):
     return edges[location] == solved_edges[location[::-1]]
+
 def find_corner_break():
     if corners['URF'] != 'WRG' and not is_twisted('URF'):
         print(print_corner_solve('URF'))
@@ -324,8 +328,6 @@ def find_corner_break():
 
 def is_twisted(location):
     return corners[location] == solved_corners[location[1:] + location[:1]] or corners[location] == solved_corners[location[2:] + location[:2]]  
-
-edge_swap_count = 0
 
 def solve_edges():
     global edge_swap_count
