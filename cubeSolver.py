@@ -1,3 +1,33 @@
+from urllib.request import urlopen
+
+url_middle = "" # To store the moves for the alg.garron URL
+
+def notation_to_URL(moves):
+    """Turns notation into part of the alg.garron URL
+    >>> notation_to_URL("R U R' U' R' F R2 U' R' U' R U R' F'")
+    'R_U_R-_U-_R-_F_R2_U-_R-_U-_R_U_R-_F-'
+    >>> notation_to_URL("(R) F R U' R' U' R U R' F' R U R' U' R' F R F' (R')")
+    '(R)_F_R_U-_R-_U-_R_U_R-_F-_R_U_R-_U-_R-_F_R_F-_(R-)'
+    >>> notation_to_URL("(R D2) F R U' R' U' R U R' F' R U R' U' R' F R F' (D2 R')")
+    '(R_D2)_F_R_U-_R-_U-_R_U_R-_F-_R_U_R-_U-_R-_F_R_F-_(D2_R-)'
+    >>> notation_to_URL("(l' D L2) R U R' U' R' F R2 U' R' U' R U R' F' (L2 D' l)")
+    '(l-_D_L2)_R_U_R-_U-_R-_F_R2_U-_R-_U-_R_U_R-_F-_(L2_D-_l)'
+    """
+    url = ""
+    moves = moves.split()
+    for move in moves:
+        if "'" in move:
+            if "(" in move and ")" in move:
+                move = move[:2] + "-" + ")"
+            elif "(" in move:
+                move = move[:2] + "-"
+            elif ")" in move:
+                move = move[0] + "-)"
+            else:
+                move = move[0] + "-"
+        url += move + "_"
+    return url[:len(url)-1]
+
 # Initial Cube State (White top, green front)
 
 
@@ -127,102 +157,107 @@ t_perm = 'R U R\' U\' R\' F R2 U\' R\' U\' R U R\' F\''
 y_perm = 'F R U\' R\' U\' R U R\' F\' R U R\' U\' R\' F R F\''
 
 def print_edge_solve(location):
-
+    global url_middle
     edges['UR'], edges[location] = edges[location], edges['UR']
     edges['RU'], edges[location[::-1]] = edges[location[::-1]], edges['RU']
 
     if location == 'UF':
-        return 'R U R\' F\' R U R\' U\' R\' F R2 U\' R\' U\''
+        solution = 'R U R\' F\' R U R\' U\' R\' F R2 U\' R\' U\''
     elif location == 'UL':
-        return t_perm
+        solution = t_perm
     elif location == 'UB':
-        return '(l2 D\' L2) ' + t_perm + ' (L2 D l2)'
+        solution = '(l2 D\' L2) ' + t_perm + ' (L2 D l2)'
     elif location == 'LD':
-        return '(L d L\') ' + t_perm + ' (L d\' L\')'
+        solution = '(L d L\') ' + t_perm + ' (L d\' L\')'
     elif location == 'LB':
-        return '(d L\') ' + t_perm + ' (L d\')'
+        solution = '(d L\') ' + t_perm + ' (L d\')'
     elif location == 'LU':
-        return '(L\' d L\') ' + t_perm + ' (L d\' L)'
+        solution = '(L\' d L\') ' + t_perm + ' (L d\' L)'
     elif location == 'LF':
-        return '(d\' L) ' + t_perm + ' (L\' d)'
+        solution = '(d\' L) ' + t_perm + ' (L\' d)'
     elif location == 'FD':
-        return '(F L\' F\') ' + t_perm + ' (F L F\')'
+        solution = '(F L\' F\') ' + t_perm + ' (F L F\')'
     elif location == 'FL':
-        return '(L\') ' + t_perm + ' (L)'
+        solution = '(L\') ' + t_perm + ' (L)'
     elif location == 'FU':
-        return '(l D\' L2) ' + t_perm + ' (L2 D l\')'
+        solution = '(l D\' L2) ' + t_perm + ' (L2 D l\')'
     elif location == 'FR':
-        return '(d2 L) ' + t_perm + ' (L\' d2)'
+        solution = '(d2 L) ' + t_perm + ' (L\' d2)'
     elif location == 'RD':
-        return '(D\' F L\' F\') ' + t_perm + ' (F L F\' D)'
+        solution = '(D\' F L\' F\') ' + t_perm + ' (F L F\' D)'
     elif location == 'RF':
-        return '(d\' L\') ' + t_perm + ' (L d)'
+        solution = '(d\' L\') ' + t_perm + ' (L d)'
     elif location == 'RB':
-        return '(d L) ' + t_perm + ' (L\' d\')'
+        solution = '(d L) ' + t_perm + ' (L\' d\')'
     elif location == 'BD':
-        return '(l\' D\' L2) ' + t_perm + ' (L2 D l)'
+        solution = '(l\' D\' L2) ' + t_perm + ' (L2 D l)'
     elif location == 'BR':
-        return '(d2 L\') ' + t_perm + ' (L d2)'
+        solution = '(d2 L\') ' + t_perm + ' (L d2)'
     elif location == 'BU':
-        return '(l\' D L2) ' + t_perm + ' (L2 D\' l)'
+        solution = '(l\' D L2) ' + t_perm + ' (L2 D\' l)'
     elif location == 'BL':
-        return '(L) ' + t_perm + ' (L\')'
+        solution = '(L) ' + t_perm + ' (L\')'
     elif location == 'DB':
-        return '(D L2) ' + t_perm + ' (L2 D\')'
+        solution = '(D L2) ' + t_perm + ' (L2 D\')'
     elif location == 'DL':
-        return '(L2) ' + t_perm + ' (L2)'
+        solution = '(L2) ' + t_perm + ' (L2)'
     elif location == 'DF':
-        return '(D\' L2) ' + t_perm + ' (L2 D)'
+        solution = '(D\' L2) ' + t_perm + ' (L2 D)'
     elif location == 'DR':
-        return '(D2 L2) ' + t_perm + ' (L2 D2)'
+        solution = '(D2 L2) ' + t_perm + ' (L2 D2)'
+    url_middle += notation_to_URL(solution) + "%0A"
+    return solution
 
 def print_corner_solve(location):
+    global url_middle
     corners['ULB'], corners[location] = corners[location], corners['ULB']
     corners['LBU'], corners[location[1:] + location[:1]] = corners[location[1:] + location[:1]], corners['LBU']
     corners['BUL'], corners[location[2:] + location[:2]] = corners[location[2:] + location[:2]], corners['BUL']
     
     if location == 'URF':
-        return y_perm
+        solution = y_perm
     elif location == 'UFL':
-        return '(F2 D R2) ' + y_perm + ' (R2 D\' F2)'
+        solution = '(F2 D R2) ' + y_perm + ' (R2 D\' F2)'
     elif location == 'UBR':
-        return '(R2 D R2) ' + y_perm + ' (R2 D\' R2)'
+        solution = '(R2 D R2) ' + y_perm + ' (R2 D\' R2)'
     elif location == 'LFD':
-        return '(D R) ' + y_perm + ' (R\' D\')'
+        solution = '(D R) ' + y_perm + ' (R\' D\')'
     elif location == 'LDB':
-        return '(D2 F\') ' + y_perm + ' (F D2)'
+        solution = '(D2 F\') ' + y_perm + ' (F D2)'
     elif location == 'LUF':
-        return '(F) ' + y_perm + ' (F\')'
+        solution = '(F) ' + y_perm + ' (F\')'
     elif location == 'FRD':
-        return '(R) ' + y_perm + ' (R\')'
+        solution = '(R) ' + y_perm + ' (R\')'
     elif location == 'FDL':
-        return '(D F\') ' + y_perm + ' (F D\')'
+        solution = '(D F\') ' + y_perm + ' (F D\')'
     elif location == 'FLU':
-        return '(F2 R) ' + y_perm + ' (R\' F2)'
+        solution = '(F2 R) ' + y_perm + ' (R\' F2)'
     elif location == 'FUR':
-        return '(F R) ' + y_perm + ' (R\' F\')'
+        solution = '(F R) ' + y_perm + ' (R\' F\')'
     elif location == 'RBD':
-        return '(D\' R) ' + y_perm + ' (R\' D)'
+        solution = '(D\' R) ' + y_perm + ' (R\' D)'
     elif location == 'RDF':
-        return '(F\') ' + y_perm + ' (F)'
+        solution = '(F\') ' + y_perm + ' (F)'
     elif location == 'RFU':
-        return '(R\' F\') ' + y_perm + '(F R)'
+        solution = '(R\' F\') ' + y_perm + ' (F R)'
     elif location == 'RUB':
-        return '(R D\' R) ' + y_perm + ' (R\' D R\')'
+        solution = '(R D\' R) ' + y_perm + ' (R\' D R\')'
     elif location == 'BLD':
-        return '(D2 R) ' + y_perm + ' (R\' D2)'
+        solution = '(D2 R) ' + y_perm + ' (R\' D2)'
     elif location == 'BDR':
-        return '(D\' F\') ' + y_perm + ' (F D)'
+        solution = '(D\' F\') ' + y_perm + ' (F D)'
     elif location == 'BRU':
-        return '(R\') ' + y_perm + ' (R)'
+        solution = '(R\') ' + y_perm + ' (R)'
     elif location == 'DRB':
-        return '(R2) ' + y_perm + ' (R2)'
+        solution = '(R2) ' + y_perm + ' (R2)'
     elif location == 'DBL':
-        return '(D\' R2) ' + y_perm + ' (R2 D)'
+        solution = '(D\' R2) ' + y_perm + ' (R2 D)'
     elif location == 'DLF':
-        return '(F2) ' + y_perm + ' (F2)'
+        solution = '(F2) ' + y_perm + ' (F2)'
     elif location == 'DFR':
-        return '(D R2) ' + y_perm + ' (R2 D\')'
+        solution = '(D R2) ' + y_perm + ' (R2 D\')'
+    url_middle += notation_to_URL(solution) + "%0A"
+    return solution
 
 _zip = zip
 
@@ -323,8 +358,7 @@ def find_corner_break():
     elif corners['DFR'] != 'YGR' and not is_twisted('DLF'):
         print(print_corner_solve('DFR'))
     else:
-        solve_twisted_corners(twisted_corners())
-    
+        solve_twisted_corners(twisted_corners())   
 
 def is_twisted(location):
     return corners[location] == solved_corners[location[1:] + location[:1]] or corners[location] == solved_corners[location[2:] + location[:2]]  
@@ -333,7 +367,7 @@ def solve_edges():
     global edge_swap_count
 
     if (edges['UF'] == 'WG') and (edges['UL'] == 'WO') and (edges['UB'] == 'WB') and (edges['UR'] == 'WR') and (edges['FL'] == 'GO') and (edges['LB'] == 'OB') and (edges['RB'] == 'RB') and (edges['RF'] == 'RG') and (edges['DB'] == 'YB') and (edges['DL'] == 'YO') and (edges['DF'] == 'YG') and (edges['DR'] == 'YR') and edge_swap_count % 2 == 0:
-        print('Edges Solved')
+        print('// Edges Solved')
         return False
     elif (edges['UF'] == 'WG') and (edges['UL'] == 'WO') and (edges['UB'] == 'WB') and (edges['UR'] == 'WR') and (edges['FL'] == 'GO') and (edges['LB'] == 'OB') and (edges['RB'] == 'RB') and (edges['RF'] == 'RG') and (edges['DB'] == 'YB') and (edges['DL'] == 'YO') and (edges['DF'] == 'YG') and (edges['DR'] == 'YR') and edge_swap_count % 2 == 1:
         print(print_edge_solve('UL'))
@@ -413,11 +447,14 @@ def solve_edges():
         solve_edges()
 
 def solve_corners():
+    global url_middle
     if (corners['URF'] == 'WRG') and (corners['UFL'] == 'WGO') and (corners['ULB'] == 'WOB') and (corners['UBR'] == 'WBR') and (corners['DRB'] == 'YRB') and (corners['DBL'] == 'YBO') and (corners['DLF'] == 'YOG') and (corners['DFR'] == 'YGR') and edge_swap_count % 2 == 0:
-        print('Corners Solved')
+        print('// Corners Solved')
         return False
     elif (corners['URF'] == 'WRG') and (corners['UFL'] == 'WGO') and (corners['ULB'] == 'WOB') and (corners['UBR'] == 'WBR') and (corners['DRB'] == 'YRB') and (corners['DBL'] == 'YBO') and (corners['DLF'] == 'YOG') and (corners['DFR'] == 'YGR') and edge_swap_count % 2 == 1:
-        print('U2 R2 U R U R\' U\' R\' U\' R\' U R\' U2 // Parity fix')
+        solution = "U2 R2 U R U R\' U\' R\' U\' R\' U R\' U2"
+        print(solution + "// Parity fix")
+        url_middle += notation_to_URL(solution) + "%0A"
         return False
 
     else: 
@@ -470,3 +507,19 @@ def solve_corners():
    
 solve_edges()
 solve_corners()
+
+# For generating the URL 
+
+def tiny_url(url):
+    """Given a link, generates a tinyurl"""
+    apiurl = "http://tinyurl.com/api-create.php?url="
+    tinyurl = urlopen(apiurl + url).read()
+    return tinyurl
+
+url_start = "https://alg.cubing.net/?alg="
+url_end = "&setup=" + notation_to_URL(scramble_input) + "&title=alg.garron.us"
+garron_url = url_start + url_middle + url_end
+url = tiny_url(garron_url)
+goal = "https://alg.cubing.net/?alg=(D2_L2)_R_U_R-_U-_R-_F_R2_U-_R-_U-_R_U_R-_F-_(L2_D2)%0A(l-_D_L2)_R_U_R-_U-_R-_F_R2_U-_R-_U-_R_U_R-_F-_(L2_D-_l)%0AR_U_R-_F-_R_U_R-_U-_R-_F_R2_U-_R-_U-%0A(l-_D-_L2)_R_U_R-_U-_R-_F_R2_U-_R-_U-_R_U_R-_F-_(L2_D_l)%0A(D-_L2)_R_U_R-_U-_R-_F_R2_U-_R-_U-_R_U_R-_F-_(L2_D)%0A(L-_d_L-)_R_U_R-_U-_R-_F_R2_U-_R-_U-_R_U_R-_F-_(L_d-_L)%0A(d-_L-)_R_U_R-_U-_R-_F_R2_U-_R-_U-_R_U_R-_F-_(L_d)%0A(L)_R_U_R-_U-_R-_F_R2_U-_R-_U-_R_U_R-_F-_(L-)%0AR_U_R-_F-_R_U_R-_U-_R-_F_R2_U-_R-_U-%0A(d2_L-)_R_U_R-_U-_R-_F_R2_U-_R-_U-_R_U_R-_F-_(L_d2)%0A(L_d_L-)_R_U_R-_U-_R-_F_R2_U-_R-_U-_R_U_R-_F-_(L_d-_L-)%0A(d2_L-)_R_U_R-_U-_R-_F_R2_U-_R-_U-_R_U_R-_F-_(L_d2)%0A(L-)_R_U_R-_U-_R-_F_R2_U-_R-_U-_R_U_R-_F-_(L)%0A(d-_L)_R_U_R-_U-_R-_F_R2_U-_R-_U-_R_U_R-_F-_(L-_d)%0A%0A(D_R2)_F_R_U-_R-_U-_R_U_R-_F-_R_U_R-_U-_R-_F_R_F-_(R2_D-)%0A(D-_R2)_F_R_U-_R-_U-_R_U_R-_F-_R_U_R-_U-_R-_F_R_F-_(R2_D)%0A(R_D-_R)_F_R_U-_R-_U-_R_U_R-_F-_R_U_R-_U-_R-_F_R_F-_(R-_D_R-)%0AF_R_U-_R-_U-_R_U_R-_F-_R_U_R-_U-_R-_F_R_F-%0A(D_F-)_F_R_U-_R-_U-_R_U_R-_F-_R_U_R-_U-_R-_F_R_F-_(F_D-)%0A(F2_R)_F_R_U-_R-_U-_R_U_R-_F-_R_U_R-_U-_R-_F_R_F-_(R-_F2)%0A(D-_F-)_F_R_U-_R-_U-_R_U_R-_F-_R_U_R-_U-_R-_F_R_F-_(F_D)%0A(R-_F-)_F_R_U-_R-_U-_R_U_R-_F-_R_U_R-_U-_R-_F_R_F-(F_R)%0A&setup=D2_B-_L-_D2_F2_U_D-_R-_B-_U2_L-_U2_B2_L-_D2_L-_U2_F2_R_F2&title=alg.garron.us"
+print(url)
+
