@@ -513,7 +513,8 @@ solve_corners()
 def tiny_url(url):
     """Given a link, generates a tinyurl"""
     apiurl = "http://tinyurl.com/api-create.php?url="
-    tinyurl = urlopen(apiurl + url).read()
+    # need to convert from bytes to string! =)
+    tinyurl = urlopen(apiurl + url).read().decode("utf-8")
     return tinyurl
 
 url_start = "https://alg.cubing.net/?alg="
